@@ -1,13 +1,17 @@
 package com.arora.quotereminder;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -43,10 +47,33 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+        switch (id) {
+            case R.id.action_settings:
+                return true;
+            case R.id.addQuote:
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle(R.string.addQuoteTitle);
+                builder.setMessage(R.string.quoteMessage);
+                final EditText inputField = new EditText(this);
+                builder.setView(inputField);
 
-        return super.onOptionsItemSelected(item);
+                //Positive response
+                builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Log.d("MainActivity", inputField.getText().toString());
+                    }
+                });
+
+                //Negative response
+                builder.setNegativeButton("Later", null);
+
+                //create the builder
+                builder.create().show();
+                Log.d("MainActivity", "New Quoted Added");
+                return true;
+            default:
+                return true;
+        }
     }
 }
