@@ -8,8 +8,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -28,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        listview = (ListView) findViewById(R.id.list);
         /*SQLiteDatabase sqlDB = new DBHelper(this).getWritableDatabase();
         Cursor cursor = sqlDB.query(DbContract.TABLE,
                 new String[]{DbContract.Columns._ID, DbContract.Columns.QUOTE, DbContract.Columns.VALIDITY, DbContract.Columns.COUNTER},
@@ -58,8 +62,51 @@ public class MainActivity extends AppCompatActivity {
                 0
         );
 
-        listview = (ListView) findViewById(R.id.list);
         listview.setAdapter(listAdapter);
+        registerForContextMenu(listview);
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        menu.setHeaderTitle("Select the Action");
+        menu.add(0, v.getId(), 0, "Edit");
+        menu.add(0, v.getId(), 0, "Delete");
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+
+        AdapterView.AdapterContextMenuInfo info =
+                (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+
+        //info.position gives the index of the selected item.
+        int indexSelected = info.position;
+        String indexOfListItemSelected = String.valueOf(info.id);
+        String itemTitle = (String) item.getTitle();
+
+        switch (itemTitle) {
+            case "Edit":
+                Log.d("ContextMenu", "item "+ info.toString() + " item is edited");
+                return true;
+
+            case "Delete":
+                Log.d("ContextMenu", "item "+ indexOfListItemSelected + " item is deleted");
+                String sql = String.format("DELETE FROM %s where %s = %s",
+                        DbContract.TABLE,
+                        DbContract.Columns._ID,
+                        indexOfListItemSelected);
+
+                helper = new DBHelper(MainActivity.this);
+                SQLiteDatabase sqlDB = helper.getWritableDatabase();
+                sqlDB.execSQL(sql);
+                updateUI();
+
+                
+                return true;
+            default:
+                return false;
+        }
     }
 
     @Override
