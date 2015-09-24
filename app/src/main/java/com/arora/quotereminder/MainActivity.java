@@ -1,35 +1,65 @@
 package com.arora.quotereminder;
 
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
+
+import com.arora.quotereminder.db.DBHelper;
+import com.arora.quotereminder.db.DbContract;
 
 public class MainActivity extends AppCompatActivity {
+
+    private DBHelper helper;
+    private ListView listview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        /*SQLiteDatabase sqlDB = new DBHelper(this).getWritableDatabase();
+        Cursor cursor = sqlDB.query(DbContract.TABLE,
+                new String[]{DbContract.Columns._ID, DbContract.Columns.QUOTE, DbContract.Columns.VALIDITY, DbContract.Columns.COUNTER},
+                null, null, null, null, null);
+        cursor.moveToFirst();
+
+        while (cursor.moveToNext()) {
+            Log.d("MainActivity Cursor",
+                    cursor.getString(cursor.getColumnIndexOrThrow(DbContract.Columns.QUOTE)));
+        }*/
+
+        updateUI();
+    }
+
+    private void updateUI() {
+        helper = new DBHelper(MainActivity.this);
+        SQLiteDatabase sqlDB = helper.getReadableDatabase();
+
+        Cursor cursor = sqlDB.query(DbContract.TABLE,
+                new String[]{DbContract.Columns._ID, DbContract.Columns.QUOTE, DbContract.Columns.VALIDITY, DbContract.Columns.COUNTER},
+                null, null, null, null, null);
+
+        ListAdapter listAdapter = new SimpleCursorAdapter(
+                this, R.layout.quote_view,
+                cursor,
+                new String[]{DbContract.Columns.QUOTE},
+                new int[] {R.id.quote},
+                0
+        );
+
+        listview = (ListView) findViewById(R.id.list);
+        listview.setAdapter(listAdapter);
     }
 
     @Override
@@ -61,7 +91,17 @@ public class MainActivity extends AppCompatActivity {
                 builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Log.d("MainActivity", inputField.getText().toString());
+                        String quote = inputField.getText().toString();
+                        Log.d("MainActivity", quote);
+
+                        DBHelper helper = new DBHelper(MainActivity.this);
+                        SQLiteDatabase db = helper.getWritableDatabase();
+                        ContentValues values = new ContentValues();
+
+                        values.clear();
+                        values.put(DbContract.Columns.QUOTE, quote);
+                        db.insertWithOnConflict(DbContract.TABLE, null, values, SQLiteDatabase.CONFLICT_IGNORE);
+                        updateUI();
                     }
                 });
 
@@ -73,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("MainActivity", "New Quoted Added");
                 return true;
             default:
-                return true;
+                return false;
         }
     }
 }
