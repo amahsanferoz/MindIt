@@ -81,28 +81,84 @@ public class MainActivity extends AppCompatActivity {
                 (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 
         //info.position gives the index of the selected item.
-        int indexSelected = info.position;
-        String indexOfListItemSelected = String.valueOf(info.id);
+        final int indexSelected = info.position;
+        final String indexOfListItemSelected = String.valueOf(info.id);
         String itemTitle = (String) item.getTitle();
+
+        helper = new DBHelper(MainActivity.this);
+        SQLiteDatabase sqlDB = helper.getWritableDatabase();
 
         switch (itemTitle) {
             case "Edit":
+                String str = "";
                 Log.d("ContextMenu", "item "+ info.toString() + " item is edited");
-                return true;
 
-            case "Delete":
-                Log.d("ContextMenu", "item "+ indexOfListItemSelected + " item is deleted");
-                String sql = String.format("DELETE FROM %s where %s = %s",
+                String sqlSelect = String.format("SELECT * FROM %s WHERE %s = %s",
                         DbContract.TABLE,
                         DbContract.Columns._ID,
                         indexOfListItemSelected);
 
-                helper = new DBHelper(MainActivity.this);
-                SQLiteDatabase sqlDB = helper.getWritableDatabase();
-                sqlDB.execSQL(sql);
+                Cursor cursor = sqlDB.rawQuery(sqlSelect, null);
+                if(cursor.moveToFirst()) {
+                    str = cursor.getString(1);
+                    Log.d("EDIT quote", str + " is the value");
+                }
+
+                Log.d("Edit", "item "+ str);
+                //String bah = cursor.getString();
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle(R.string.addQuoteTitle);
+                builder.setMessage(R.string.quoteMessage);
+                final EditText inputField = new EditText(this);
+                builder.setView(inputField);
+                inputField.append(str);
+
+                //Positive response
+                builder.setPositiveButton("Update", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String quote = inputField.getText().toString();
+                        Log.d("Edit the Quote", quote);
+
+                        String sqlUpdate = String.format("UPDATE %s SET %s = '%s' WHERE %s = '%s'",
+                                DbContract.TABLE,
+                                DbContract.Columns.QUOTE,
+                                quote,
+                                DbContract.Columns._ID,
+                                indexOfListItemSelected);
+
+                        DBHelper helper = new DBHelper(MainActivity.this);
+                        SQLiteDatabase db = helper.getWritableDatabase();
+                        /*ContentValues values = new ContentValues();
+
+                        values.clear();
+                        values.put(DbContract.Columns.QUOTE, quote);
+                        db.insertWithOnConflict(DbContract.TABLE, null, values, SQLiteDatabase.CONFLICT_IGNORE);*/
+                        db.execSQL(sqlUpdate);
+                        updateUI();
+                    }
+                });
+
+                //Negative response
+                builder.setNegativeButton("Cancel", null);
+
+                builder.create().show();
+
+                return true;
+
+            case "Delete":
+                Log.d("ContextMenu", "item "+ indexOfListItemSelected + " item is deleted");
+                String sqlDelete = String.format("DELETE FROM %s where %s = %s",
+                        DbContract.TABLE,
+                        DbContract.Columns._ID,
+                        indexOfListItemSelected);
+
+
+                sqlDB.execSQL(sqlDelete);
                 updateUI();
 
-                
+
                 return true;
             default:
                 return false;
