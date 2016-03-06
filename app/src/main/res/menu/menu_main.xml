@@ -3,13 +3,23 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:context=".MainActivity">
     <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never"/>
-    <item
         android:id="@+id/addQuote"
         android:orderInCategory="100"
         android:title="Add a Quote"
         app:showAsAction="always"/>
+    <item
+        android:id="@+id/startScheduler"
+        android:orderInCategory="100"
+        android:title="Start Scheduler"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/stopScheduler"
+        android:orderInCategory="100"
+        android:title="Stop Scheduler"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/setInterval"
+        android:orderInCategory="100"
+        android:title="Set Interval"
+        app:showAsAction="never"/>
 </menu>

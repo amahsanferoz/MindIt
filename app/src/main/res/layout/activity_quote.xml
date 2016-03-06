@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.arora.quotereminder.Quote"
+    android:paddingTop="100dp">
+
+    <TextView
+        android:id="@+id/showQuote"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:gravity="center"
+        android:textSize="28sp"
+        android:text="Demo Text"
+        android:textStyle="bold|italic"
+        android:layout_gravity="center_horizontal"
+        android:paddingBottom="40dp"/>
+
+    <Button
+        android:id="@+id/closeQuote"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:background="#686363"
+        android:text="Close"
+        android:textColor="#FFF"
+        android:layout_gravity="center_horizontal"/>
+
+</LinearLayout>

@@ -3,4 +3,17 @@
     <style name="MyAppTheme" parent="@android:style/Theme.Holo.Light">
         <!-- Any customizations for your app running on 3.0+ devices here -->
     </style>
+
+    <!-- the theme applied to the application or activity -->
+    <style name="CustomActionBarTheme"
+           parent="@style/Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:actionBarStyle">@style/MyActionBar</item>
+    </style>
+
+
+    <!-- ActionBar styles -->
+    <style name="MyActionBar"
+           parent="@style/Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:background">#FF6347</item>
+    </style>
 </resources>

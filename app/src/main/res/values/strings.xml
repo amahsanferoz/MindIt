@@ -1,6 +1,10 @@
 <resources>
-    <string name="app_name">Quote Reminder</string>
+    <string name="app_name">MindIt</string>
     <string name="action_settings">Settings</string>
     <string name="addQuoteTitle">Add Quote</string>
+    <string name="setIntervelTitle">Set notification interval</string>
+    <string name="setInterval">After how many hours you want to have a notification ?</string>
     <string name="quoteMessage">Which Quote is in your mind today ?</string>
+    <string name="title_activity_quote">Quote</string>
+
 </resources>
